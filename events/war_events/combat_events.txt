@@ -128,7 +128,7 @@ combat_event.0001 = {
 							id = combat_event.0003
 							days = 1
 						}
-					}	
+					}
 				}
 			}
 		}
@@ -211,7 +211,7 @@ combat_event.0003 = {
 		give_nickname = nick_the_undefeated # We don't use 'set_nick_effect' here because this is important enough we want it to override event 'good' nicknames. Plus it's an opt-in.
 		add_prestige = massive_prestige_gain
 
-		add_martial_skill = 3	
+		add_martial_skill = 3
 
 		#AI will always pick this unless Humble.
 		stress_impact = {
@@ -219,7 +219,7 @@ combat_event.0003 = {
 		}
 		ai_chance = {
 			base = 100
-			
+
 			modifier = {
 				has_trait = humble
 				add = -100
@@ -257,7 +257,7 @@ combat_event.0003 = {
 		}
 		ai_chance = {
 			base = 0
-			
+
 			modifier = {
 				has_trait = humble
 				add = 100
@@ -299,7 +299,7 @@ combat_event.0004 = {
 		}
 		ai_chance = {
 			base = 100
-			
+
 			modifier = {
 				has_trait = humble
 				add = -100
@@ -337,7 +337,7 @@ combat_event.0004 = {
 		}
 		ai_chance = {
 			base = 0
-			
+
 			modifier = {
 				has_trait = humble
 				add = 100
@@ -399,7 +399,7 @@ combat_event.0005 = {
 		}
 		ai_chance = {
 			base = 50
-			
+
 			ai_value_modifier = {
 				ai_vengefulness = -5
 			}
@@ -434,7 +434,7 @@ combat_event.0005 = {
 		}
 		ai_chance = {
 			base = 5000
-			
+
 			ai_value_modifier = {
 				ai_vengefulness = 5
 			}
@@ -741,7 +741,7 @@ combat_event.1001 = {
 							liege.culture = { has_cultural_parameter = knights_die_less_but_are_captured_more }
 							NOT = { is_independent_ruler = yes }
 						}
-						
+
 						add_to_list = prisoners_of_war
 
 						# Log a battle event so that the imprisonment shows up in the battle summary screen.
@@ -856,7 +856,7 @@ combat_event.1001 = {
 						combat_transfer_equipped_artifact_effect = { TYPE = armor OWNER = scope:combat_winner }
 
 						add_to_list = prisoners_of_war
-						
+
 						# Log a battle event so that the imprisonment shows up in the battle summary screen.
 						save_temporary_scope_as = this_combatant
 						root = {
@@ -893,7 +893,7 @@ combat_event.1001 = {
 							factor = 2
 							has_trait = brave
 						}
-						
+
 						# Increased chance of dying the more wounded a character is.
 						modifier = {
 							factor = 2
@@ -1021,7 +1021,7 @@ combat_event.1001 = {
 			}
 			clear_variable_list = slain_side_knights
 		}
-		
+
 		# Also record who already died on the winning side, so the victor knows their own casualty count.
 		scope:winning_side = {
 			every_in_list = {
@@ -1035,7 +1035,7 @@ combat_event.1001 = {
 		# Handle effects & messaging for any slain combatants.
 		if = {
 			limit = {
-				OR = {			
+				OR = {
 					any_in_list = {
 						list = slain_combatants
 						exists = this
@@ -1064,7 +1064,7 @@ combat_event.1001 = {
 
 					save_temporary_scope_as = notification_target
 
-					OR = {				
+					OR = {
 						any_in_list = {
 							list = slain_combatants
 							combat_event_1001_character_is_relevant_to_target_trigger = { TARGET = scope:notification_target }
@@ -1111,12 +1111,12 @@ combat_event.1001 = {
 				}
 				trigger_event = combat_event.1004
 			}
-		}		
+		}
 	}
 }
 
 #####################
-# Prisoners of War	
+# Prisoners of War
 
 # Prisoner notification event for combat winner.
 combat_event.1002 = {
@@ -1231,7 +1231,7 @@ combat_event.1002 = {
 			every_in_list = {
 				list = relevant_prisoners_of_war
 				limit = { is_alive = yes }
-				
+
 				save_temporary_scope_as = this_prisoner
 				# [PoW]
 				prisoner_of_war_capture_effect = {
@@ -1251,7 +1251,7 @@ combat_event.1002 = {
 
 							combat_event_1001_character_is_important_combatant = yes
 						}
-						save_scope_as = important_hostage
+						save_scope_as = valuable_prisoner
 
 						# The imprisoner must be informed that they captured an important hostage.
 						scope:combat_winner = {
@@ -1262,7 +1262,7 @@ combat_event.1002 = {
 						if = {
 							limit = {
 								# But not if they themselves are the prisoner! (they will get an event already upon being imprisoned).
-								NOT = { scope:important_hostage = scope:primary_combat_loser }
+								NOT = { scope:valuable_prisoner = scope:primary_combat_loser }
 							}
 							scope:primary_combat_loser = {
 								trigger_event = combat_event.1006
@@ -1399,7 +1399,7 @@ combat_event.1003 = {
 			every_in_list = {
 				list = relevant_prisoners_of_war
 				limit = { is_alive = yes }
-				
+
 				save_temporary_scope_as = this_prisoner
 				show_as_tooltip = {
 					scope:combat_winner = {
@@ -1417,7 +1417,7 @@ combat_event.1003 = {
 
 	after = {
 		remove_variable = num_other_relevant_captured_combatants
-	}	
+	}
 }
 
 # Prisoner notification event for other relevant characters (sends a personalized notification to a player about characters of interest who were captured in battle.)
@@ -1510,7 +1510,7 @@ combat_event.1004 = {
 				every_in_list = {
 					list = relevant_prisoners_of_war
 					limit = { is_alive = yes }
-					
+
 					save_temporary_scope_as = this_prisoner
 					scope:combat_winner = {
 						imprison = {
@@ -1538,14 +1538,14 @@ combat_event.1005 = {
 	immediate = {
 		if = {
 			limit = {
-				scope:important_hostage = scope:primary_combat_loser
+				scope:valuable_prisoner = scope:primary_combat_loser
 			}
 			send_interface_toast = {
 				type = msg_character_captured_by_me
 				title = combat_event.1005.pow_toast.t
 				desc = combat_event.1005.pow_toast.desc.primary
 				left_icon = scope:combat_winner
-				right_icon = scope:important_hostage
+				right_icon = scope:valuable_prisoner
 			}
 		}
 		else = {
@@ -1554,7 +1554,7 @@ combat_event.1005 = {
 				title = combat_event.1005.pow_toast.t
 				desc = combat_event.1005.pow_toast.desc
 				left_icon = scope:combat_winner
-				right_icon = scope:important_hostage
+				right_icon = scope:valuable_prisoner
 			}
 		}
 	}
@@ -1571,7 +1571,7 @@ combat_event.1006 = {
 			title = combat_event.1006.pow_toast.t
 			desc = combat_event.1006.pow_toast.desc
 			left_icon = scope:combat_winner
-			right_icon = scope:important_hostage
+			right_icon = scope:valuable_prisoner
 		}
 	}
 }
@@ -1584,14 +1584,14 @@ combat_event.1007 = {
 	immediate = {
 		if = {
 			limit = {
-				scope:important_hostage = scope:primary_combat_loser
+				scope:valuable_prisoner = scope:primary_combat_loser
 			}
 			send_interface_toast = {
 				type = msg_character_captured_by_me
 				title = combat_event.1007.pow_toast_primary.t
 				desc = combat_event.1007.pow_toast.desc.primary
 				left_icon = scope:combat_winner
-				right_icon = scope:important_hostage
+				right_icon = scope:valuable_prisoner
 			}
 		}
 		else = {
@@ -1600,7 +1600,7 @@ combat_event.1007 = {
 				title = combat_event.1007.pow_toast.t
 				desc = combat_event.1007.pow_toast.desc
 				left_icon = scope:combat_winner
-				right_icon = scope:important_hostage
+				right_icon = scope:valuable_prisoner
 			}
 		}
 	}
@@ -1681,7 +1681,7 @@ scripted_effect generate_relevant_slain_combatants_list_effect = {
 			save_scope_as = primary_deceased
 
 			# Decrement the number of relevant slain combatants, to exclude the primary deceased from the count (for localization).
-			root = {		
+			root = {
 				change_variable = {
 					name = num_other_relevant_slain_combatants
 					add = -1
@@ -1708,7 +1708,7 @@ scripted_effect clear_relevant_slain_combatants_list_effect = {
 }
 
 #####################
-# Slain Combatants	
+# Slain Combatants
 
 # Casualty notification event for combat winner.
 combat_event.1012 = {
@@ -1720,7 +1720,7 @@ combat_event.1012 = {
 		generate_relevant_slain_combatants_list_effect = {
 			LIST_OF_SLAIN_COMBATANTS = slain_combatants
 			LIST_ALL_CHARACTERS = no
-		}	
+		}
 		if = {
 			limit = {
 				any_in_list = {
@@ -1751,7 +1751,7 @@ combat_event.1012 = {
 				# Show all slain combatants.
 				every_in_list = {
 					list = relevant_slain_combatants
-					
+
 					show_as_tooltip = {
 						death = {
 							death_reason = death_battle
@@ -1797,7 +1797,7 @@ combat_event.1012 = {
 				# Show all slain combatants.
 				every_in_list = {
 					list = relevant_slain_combatants
-					
+
 					show_as_tooltip = {
 						death = {
 							death_reason = death_battle
@@ -1820,7 +1820,7 @@ combat_event.1013 = {
 		generate_relevant_slain_combatants_list_effect = {
 			LIST_OF_SLAIN_COMBATANTS = victorious_slain_combatants
 			LIST_ALL_CHARACTERS = no
-		}	
+		}
 		if = {
 			limit = {
 				any_in_list = {
@@ -1851,7 +1851,7 @@ combat_event.1013 = {
 				# Show all slain combatants.
 				every_in_list = {
 					list = relevant_slain_combatants
-					
+
 					show_as_tooltip = {
 						death = {
 							death_reason = death_battle
@@ -1897,7 +1897,7 @@ combat_event.1013 = {
 				# Show all slain combatants.
 				every_in_list = {
 					list = relevant_slain_combatants
-					
+
 					show_as_tooltip = {
 						death = {
 							death_reason = death_battle
@@ -1907,7 +1907,7 @@ combat_event.1013 = {
 			}
 		}
 		clear_relevant_slain_combatants_list_effect = yes
-	}		
+	}
 }
 
 # Casualty notification event for other relevant characters (sends a personalized notification to a player about characters of interest who were captured in battle.)
@@ -1966,7 +1966,7 @@ combat_event.1014 = {
 				show_as_tooltip = {
 					every_in_list = {
 						list = relevant_slain_combatants
-						
+
 						death = {
 							death_reason = death_battle
 						}
@@ -1999,6 +1999,10 @@ combat_event.2001 = {
 				has_trait = education_stewardship_4
 				has_trait = education_martial_4
 				has_trait = education_learning_4
+				has_trait = education_diplomacy_5
+				has_trait = education_stewardship_5
+				has_trait = education_martial_5
+				has_trait = education_learning_5
 			}
 			NOT = {
 				has_nickname = nick_gajapati
