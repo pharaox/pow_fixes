@@ -1,0 +1,110 @@
+﻿# A lite version of imprison_character_effect without opinion penalties or other consequences (as they were captured in war, not at your command)
+prisoner_of_war_capture_effect = {
+	$TARGET$ = { save_temporary_scope_as = new_target }
+	$IMPRISONER$ = { save_temporary_scope_as = imprisoner }
+	#[PoW]
+	if = { limit = { PoW_is_loaded_prisoner_transit_enabled = yes } PoW_prisoner_of_war_capture_effect = yes }
+	else = {
+	#[/PoW]
+	#[Vanilla]
+		if = {
+			limit = {
+				scope:new_target = {
+					exists = liege
+					OR = {
+						is_landed = yes
+						is_close_or_extended_family_of = liege
+						is_spouse_of = liege
+					}
+				}
+			}
+			
+			scope:imprisoner = {
+				imprison = {
+					target = scope:new_target
+					type = house_arrest
+				}
+			}
+		}		
+		else = {
+			scope:imprisoner = {
+				imprison = {
+					target = scope:new_target
+					type = dungeon
+				}
+			}
+		}
+	#[/Vanilla]
+	#[FF]
+	}
+	#[/FF]
+}
+
+
+escape_from_prison_effect = {
+	#[FF] avoids errors when root isn't the prisoner
+	save_scope_as = prisoner_temp
+	if = {
+		limit = { NOT = { exists = scope:imprisoner }}
+		imprisoner ?= { save_scope_as = imprisoner }
+	}
+	#[/FF]
+	play_music_cue = "mx_cue_sacredrite"
+	scope:imprisoner ?= {
+		if = {
+			limit = {
+				exists = capital_province
+			}
+			capital_province = {
+				save_scope_as = background_wilderness_scope
+			}
+		}
+		else = {
+			location = {
+				save_scope_as = background_wilderness_scope
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+	#[FF]
+					has_revoke_title_reason = scope:prisoner_temp
+					has_banish_reason = scope:prisoner_temp
+					has_execute_reason = scope:prisoner_temp
+	#[/FF]
+				}
+			}
+			add_opinion = {
+	#[FF]
+				target = scope:prisoner_temp
+	#[/FF]
+				modifier = escaped_from_prison_crime
+			}
+		}
+		else = {
+			add_opinion = {
+	#[FF]
+				target = scope:prisoner_temp
+	#[/FF]
+				modifier = escaped_from_prison_opinion
+			}
+		}
+	}
+	add_character_flag = { #To make sure you don't get spammed about the release
+		flag = block_for_prison_release_notification
+		days = 1
+	}
+	release_from_prison = yes
+	random_dummy_gender_soldier_effect = { SCOPE_NAME = dummy_gender }
+	hidden_effect = {
+		remove_decision_cooldown = escape_from_prison_decision
+	}
+	if = {
+		limit = { has_character_modifier = allowed_to_go_outside }
+		remove_character_modifier = allowed_to_go_outside
+	}
+	if = {
+		limit = { has_character_modifier = moldy_gruel_diet }
+		remove_character_modifier = moldy_gruel_diet
+	}
+}
