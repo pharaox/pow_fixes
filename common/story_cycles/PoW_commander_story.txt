@@ -44,17 +44,40 @@
 				}
 				if = {
 					limit = { exists = scope:home }
-					start_travel_plan = {
-						destination = scope:home
-						players_use_planner = no
-						return_trip = no
-						on_arrival_on_action = PoW_on_travel_plan_complete_prisoner_transit
+					# FIX: Set location to saved story location
+					set_location = {
+						location = scope:story.var:location
+						stick_to_location = yes
+					}
+					# FIX: Add army owner capital as first destination if needed
+					if = {
+						limit = {
+							any_in_list = { variable = PoW count > 0 }
+							NOT = { scope:story.var:army_owner.capital_province = scope:home }
+						}
+						start_travel_plan = {
+							destination = scope:story.var:army_owner.capital_province
+							destination = scope:home
+							players_use_planner = no
+							return_trip = no
+							on_arrival_on_action = PoW_on_travel_plan_complete_prisoner_transit
+							on_arrival_destinations = first
+						}
+					}
+					else = {
+						start_travel_plan = {
+							destination = scope:home
+							players_use_planner = no
+							return_trip = no
+							on_arrival_on_action = PoW_on_travel_plan_complete_prisoner_transit
+							on_arrival_destinations = last # FIX: Set this so the above on_action is actually trigerred
+						}
 					}
 					current_travel_plan = {
 						save_scope_as = PoW_commander_return_travel
 						set_variable = block_travel_plan_home_button
 						set_variable = block_travel_plan_customize_button
-						set_variable = PoW_gather_commanders
+						set_variable = PoW_prisoner_transit # FIX: Always use this for commander return travel
 						if = {
 							limit = { NOT = { has_game_rule = PoW_gather_commanders_enabled_travel_events }}
 							set_variable = FF_vanilla_on_travel_plan_movement_blocker
@@ -65,17 +88,18 @@
 							set_variable = FF_vanilla_on_travel_leader_removed_blocker
 						}
 					}
-					if = {
-						limit = { any_in_list = { variable = PoW count > 0 }}
-						scope:PoW_commander_return_travel = {
-							set_variable = PoW_prisoner_transit
+					# FIX: No longer needed
+					#if = {
+					#	limit = { any_in_list = { variable = PoW count > 0 }}
+					#	scope:PoW_commander_return_travel = {
+					#		set_variable = PoW_prisoner_transit
 
-							if = {
-								limit = { NOT = { scope:story.var:army_owner.capital_province = scope:home }}
-								add_travel_waypoint = scope:story.var:army_owner.capital_province
-							}
-						}
-					}
+					#		if = {
+					#			limit = { NOT = { scope:story.var:army_owner.capital_province = scope:home }}
+					#			add_travel_waypoint = scope:story.var:army_owner.capital_province
+					#		}
+					#	}
+					#}
 				}
 				else = {
 					PoW_liberate_prisoners = yes

@@ -103,22 +103,37 @@ PoW_delivery = {
 						}
 					}
 					remove_variable = PoW
+					# FIX: Update variables
+					remove_variable = PoW_current_location
+					remove_variable = PoW_prison_location
 				}
-				else_if = {
-					limit = {
-						OR = {
-							is_at_war_with = scope:army.army_owner
-							any_heir_title = {
-								holder ?= { is_at_war_with = scope:army.army_owner }
+				else = { # FIX: Handle prisoners
+					if = {
+						limit = {
+							OR = {
+								is_at_war_with = scope:army.army_owner
+								any_heir_title = {
+									holder ?= { is_at_war_with = scope:army.army_owner }
+								}
+								is_landed = yes
+								any_close_family_member = { is_landed = yes }
 							}
-							is_landed = yes
-							any_close_family_member = { is_landed = yes }
 						}
+						change_prison_type = house_arrest
 					}
-					change_prison_type = house_arrest
+					else = { change_prison_type = dungeon }
+					remove_variable = PoW
+					# FIX: Set location to army owner's capital province and update variables
+					set_location = {
+						location = scope:army.army_owner.capital_province
+						stick_to_location = yes
+					}
+					remove_variable = PoW_current_location
+					set_variable = {
+						name = PoW_prison_location
+						value = scope:army.army_owner.capital_province
+					}
 				}
-				else = { change_prison_type = dungeon }
-				remove_variable = PoW
 			}
 			clear_variable_list = PoW
 		}
@@ -169,7 +184,7 @@ on_travel_plan_movement = {
 on_travel_plan_complete = {
 	on_actions = {
 		PoW_on_travel_plan_movement_gather_commanders
-		PoW_on_travel_plan_complete_prisoner_transit
+		#PoW_on_travel_plan_complete_prisoner_transit # FIX: Not needed if travel plan is setup properly
 	}
 }
 
@@ -179,7 +194,7 @@ PoW_on_travel_plan_movement_gather_commanders = {
 	}
 	effect = {
 		if = {
-			limit = { PoW_debug = yes}
+			limit = { PoW_debug = yes }
 			debug_log = "on_commander_travel_to_army - Commander [THIS.Char.GetID] [THIS.Char.GetNameNoTooltip] - Location [THIS.Char.GetCurrentLocation.GetNameNoTooltip] - Army [THIS.Char.GetTravelPlan.MakeScope.Var('army').Army.GetNameNoTooltip]"
 		}
 		current_travel_plan ?= {
@@ -213,11 +228,28 @@ PoW_on_travel_plan_movement_prisoner_transit = {
 		current_travel_plan = { has_variable = PoW_prisoner_transit }
 	}
 	effect = {
+		# FIX: Set location to current location
+		if = {
+			limit = { PoW_debug = yes }
+			debug_log = "on_travel_plan_movement_prisoner_transit - Commander [THIS.Char.GetID] [THIS.Char.GetNameNoTooltip] - Location [THIS.Char.GetCurrentLocation.GetNameNoTooltip]"
+		}
+		current_travel_plan = {
+			current_location = { save_temporary_scope_as = current_location }
+		}
+		set_location = {
+			location = scope:current_location
+			stick_to_location = yes
+		}
 		every_in_list = {
 			variable = PoW
 			set_location = {
-				location = prev.location
+				location =  scope:current_location # FIX: Use current location
 				stick_to_location = yes
+			}
+			# FIX: Set PoW_current_location variable
+			set_variable = {
+				name = PoW_current_location
+				value = location
 			}
 		}
 	}
@@ -238,6 +270,18 @@ on_travel_plan_movement_debug = {
 PoW_on_travel_plan_complete_prisoner_transit = {
 	trigger = { current_travel_plan = { has_variable = PoW_prisoner_transit }}
 	effect = {
+		# FIX: Set location to current location
+		if = {
+			limit = { PoW_debug = yes }
+			debug_log = "on_travel_plan_complete_prisoner_transit - Commander [THIS.Char.GetID] [THIS.Char.GetNameNoTooltip] - Location [THIS.Char.GetCurrentLocation.GetNameNoTooltip]"
+		}
+		current_travel_plan = {
+			current_location = { save_temporary_scope_as = current_location }
+		}
+		set_location = {
+			location = scope:current_location
+			stick_to_location = yes
+		}
 		every_in_list = {
 			variable = PoW
 			if = {
@@ -249,6 +293,9 @@ PoW_on_travel_plan_complete_prisoner_transit = {
 					}
 				}
 				remove_variable = PoW
+				# FIX: Update variables
+				remove_variable = PoW_current_location
+				remove_variable = PoW_prison_location
 			}
 			else = {
 				if = {
@@ -264,6 +311,16 @@ PoW_on_travel_plan_complete_prisoner_transit = {
 				}
 				else = { change_prison_type = dungeon }
 				remove_variable = PoW
+				# FIX: Set location to current location and update variables
+				set_location = {
+					location = scope:current_location
+					stick_to_location = yes
+				}
+				remove_variable = PoW_current_location
+				set_variable = {
+					name = PoW_prison_location
+					value = scope:current_location
+				}
 			}
 		}
 		clear_variable_list = PoW
@@ -308,6 +365,11 @@ PoW_prisoner_transfer_to_army = {
 							target = prev
 						}
 					}
+					# FIX: Set PoW variable to new commander
+					set_variable = {
+						name = PoW
+						value = scope:PoW_transfer
+					}
 					if = {
 						limit = { is_imprisoned = no }
 						debug_log = "BUG: Not imprisoned"
@@ -330,13 +392,13 @@ PoW_prisoner_transfer_to_army = {
 						}
 						set_variable = PoW_transfer
 						release_from_prison = yes
-						prev.var:commander_story.var:army_owner = {
+						scope:PoW_transfer.var:commander_story.var:army_owner = { # FIX: Imprison by new commander
 							imprison = {
 								target = prev
 								type = prisoner_of_war
 							}
 						}
-						set_location = prev.var:commander_story.var:location
+						set_location = scope:PoW_transfer.var:commander_story.var:location # FIX: Set location to new commander
 						remove_variable = PoW_transfer
 					}
 				}
@@ -451,6 +513,8 @@ on_release_from_prison = {
 PoW_on_release_from_prison = {
 	trigger = {
 		PoW_is_loaded = yes
+		# FIX: Never start travel for a PoW that is being transfered
+		NOT = { has_variable = PoW_transfer }
 		trigger_if = {
 			limit = {
 				OR = {
@@ -459,7 +523,7 @@ PoW_on_release_from_prison = {
 				}
 			}
 			has_variable = PoW
-			NOT = { has_variable = PoW_transfer }
+			#NOT = { has_variable = PoW_transfer } # FIX: No longer needed
 		}
 	}
 	effect = {
@@ -499,6 +563,11 @@ PoW_on_release_from_prison = {
 				}
 				if = {
 					limit = { exists = scope:starting_location }
+					# FIX: Set location to starting location
+					set_location = {
+						location = scope:starting_location
+						stick_to_location = yes
+					}
 					start_travel_plan = {
 						destination = scope:home
 						players_use_planner = no
@@ -559,7 +628,14 @@ on_travel_plan_start = {
 
 PoW_on_travel_plan_start = {
 	trigger = {
-		current_travel_plan = { has_variable = PoW_prisoner_release }
+		current_travel_plan = {
+			# FIX: Set locaiton to current location for all PoW travel plans
+			OR = {
+				has_variable = PoW_prisoner_release
+				has_variable = PoW_gather_commanders
+				has_variable = PoW_prisoner_transit
+			}
+		}
 	}
 	effect = {
 		set_location = current_travel_plan.current_location
