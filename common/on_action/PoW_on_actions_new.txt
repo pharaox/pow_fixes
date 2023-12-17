@@ -7,6 +7,7 @@ on_game_start_PoW = {
 		}
 		set_global_variable = PoW_v1_1_1
 		set_global_variable = PoW_v1_1_2
+		set_global_variable = PoW_v1_1_3
 	}
 }
 
@@ -184,7 +185,7 @@ on_travel_plan_movement = {
 on_travel_plan_complete = {
 	on_actions = {
 		PoW_on_travel_plan_movement_gather_commanders
-		#PoW_on_travel_plan_complete_prisoner_transit # FIX: Not needed if travel plan is setup properly
+		# PoW_on_travel_plan_complete_prisoner_transit # FIX: Not needed if travel plan is setup properly
 	}
 }
 
@@ -243,7 +244,7 @@ PoW_on_travel_plan_movement_prisoner_transit = {
 		every_in_list = {
 			variable = PoW
 			set_location = {
-				location =  scope:current_location # FIX: Use current location
+				location = scope:current_location # FIX: Use current location
 				stick_to_location = yes
 			}
 			# FIX: Set PoW_current_location variable
@@ -523,7 +524,7 @@ PoW_on_release_from_prison = {
 				}
 			}
 			has_variable = PoW
-			#NOT = { has_variable = PoW_transfer } # FIX: No longer needed
+			# NOT = { has_variable = PoW_transfer } # FIX: No longer needed
 		}
 	}
 	effect = {

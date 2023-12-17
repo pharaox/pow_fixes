@@ -94,17 +94,17 @@
 						}
 					}
 					# FIX: No longer needed
-					#if = {
-					#	limit = { any_in_list = { variable = PoW count > 0 }}
-					#	scope:PoW_commander_return_travel = {
-					#		set_variable = PoW_prisoner_transit
+					# if = {
+					# 	limit = { any_in_list = { variable = PoW count > 0 }}
+					# 	scope:PoW_commander_return_travel = {
+					# 		set_variable = PoW_prisoner_transit
 
-					#		if = {
-					#			limit = { NOT = { scope:story.var:army_owner.capital_province = scope:home }}
-					#			add_travel_waypoint = scope:story.var:army_owner.capital_province
-					#		}
-					#	}
-					#}
+					# 		if = {
+					# 			limit = { NOT = { scope:story.var:army_owner.capital_province = scope:home }}
+					# 			add_travel_waypoint = scope:story.var:army_owner.capital_province
+					# 		}
+					# 	}
+					# }
 				}
 				else = {
 					PoW_liberate_prisoners = yes
