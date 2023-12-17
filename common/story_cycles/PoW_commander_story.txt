@@ -32,7 +32,12 @@
 			story_owner = { debug_log_scopes = no }
 		}
 		if = {
-			limit = { story_owner = { is_alive = yes }}
+			limit = {
+				story_owner = {
+					is_alive = yes
+					is_imprisoned = no
+				}
+			}
 			story_owner = {
 				if = {
 					limit = { is_landed = yes }
